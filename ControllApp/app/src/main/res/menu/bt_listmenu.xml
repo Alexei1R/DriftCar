@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"   xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:title="Search"
+        android:id="@+id/id_search"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_baseline_search_24"
+        android:orderInCategory="100"
+    />
+
+
+
+</menu>

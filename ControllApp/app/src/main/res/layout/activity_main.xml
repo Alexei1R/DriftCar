@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bara_gyro"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:backgroundTint="#29685F"
+    android:longClickable="true"
+    android:textAlignment="center"
+    tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/joystick"
+        android:layout_width="20dp"
+        android:layout_height="30dp"
+        android:visibility="gone"
+        app:srcCompat="@drawable/joystick"
+        tools:layout_editor_absoluteX="30dp"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/throtle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:text="throtle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bara_grade" />
+
+    <TextView
+        android:id="@+id/bara_grade"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp"
+        android:orderInCategory="2"
+        android:text="none"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout" />
+
+    <ImageView
+        android:id="@+id/imGrage"
+        android:layout_width="260dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="#2CE4DE"
+        android:contentDescription="@string/fab_transformation_scrim_behavior"
+        android:orderInCategory="1"
+        android:rotation="0"
+        android:visibility="visible"
+
+        app:layout_constraintBottom_toTopOf="@+id/bara_grade"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_launcher_background"
+        tools:visibility="visible" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
