@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.utmcontroll.adapter.BTConstd;
 import com.example.utmcontroll.bluetooth.BTConnection;
+import java.nio.ByteBuffer;
 import com.example.utmcontroll.SendPackageData;
 
 public class MainActivity extends AppCompatActivity {
@@ -97,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
         //send.start();
 
 
-        data.setAux2((byte)1);
+        data.setAux2(1);
         modeButton.setBackgroundColor(getResources().getColor(R.color.on));
-        data.setAux1((byte)0);
+        data.setAux1(0);
         armButton.setBackgroundColor(getResources().getColor(R.color.of));
 
 
@@ -126,10 +127,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(data.getAux1() >= 1) {
-                    data.setAux1((byte) 0);
+                    data.setAux1(0);
                     armButton.setBackgroundColor(getResources().getColor(R.color.of));
                 }else{
-                    data.setAux1((byte)1);
+                    data.setAux1(1);
                     armButton.setBackgroundColor(getResources().getColor(R.color.on));
                 }
             }
@@ -143,34 +144,63 @@ public class MainActivity extends AppCompatActivity {
            public void onClick(View view) {
 
 
-               Byte[] arr = new Byte[6];
+               Integer[] arr = new Integer[6];
                arr = data.GetPackageData();
-               Log.d("MyLog",arr.toString());
 
-               //btConnection.SendData(arr.toString());
+
+               btConnection.SendData((byte)112);
+
+
+
+
+
+
+
+               /*for (int i = 0;i<6;i++){
+
+                   byte[] buf = new byte[4];
+                   buf = intToBytes(arr[i]);
+                    for(int j = 0;j<4;j++){
+                        btConnection.SendData(buf[j]);
+                    }
+
+
+               }*/
+
                for (int i = 0;i<6;i++){
 
-
-                   btConnection.SendData(arr[i]);
+                   Integer val = arr[i];
+                   val = arr[i];
+                   byte[] bytes = ByteBuffer.allocate(4).putInt(val).array();
+                   for(int j = 0;j<4;j++){
+                        btConnection.SendData(bytes[j]);
+                    }
 
 
                }
 
-               btConnection.SendData((byte)13);
-               btConnection.SendData((byte)10);
+
 
                if(data.getAux2() >= 1){
-                   data.setAux2((byte)0);
+                   data.setAux2(0);
                    modeButton.setBackgroundColor(getResources().getColor(R.color.of));
                }
                else {
-                   data.setAux2((byte)1);
+                   data.setAux2(1);
                    modeButton.setBackgroundColor(getResources().getColor(R.color.on));
                }
            }
        });
     }
 
+    private static byte[] intToBytes(final int data) {
+        return new byte[] {
+                (byte)((data >> 24) & 0xff),
+                (byte)((data >> 16) & 0xff),
+                (byte)((data >> 8) & 0xff),
+                (byte)((data >> 0) & 0xff),
+        };
+    }
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     void ProcessTrottleLeft(){
@@ -192,8 +222,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-            data.setTrottle((byte) deltaY);
-            data.setYau((byte) deltaX);
+            data.setTrottle(deltaY);
+            data.setYau(deltaX);
 
 
             throtleViewLeft.setText(String.valueOf(deltaX) + " : " + String.valueOf(deltaY));
@@ -222,8 +252,8 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            data.setPitch((byte)rdeltaY);
-            data.setRoll((byte)rdeltaX);
+            data.setPitch(rdeltaY);
+            data.setRoll(rdeltaX);
 
 
             throtleViewRight.setText(String.valueOf(rdeltaX) + " : " + String.valueOf(rdeltaY));

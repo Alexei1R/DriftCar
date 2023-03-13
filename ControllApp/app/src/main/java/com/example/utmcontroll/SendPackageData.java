@@ -1,66 +1,66 @@
 package com.example.utmcontroll;
 
 public class SendPackageData {
-    private Byte Trottle = 0;
-    private Byte Yau = 0;
-    private Byte Pitch = 0;
-    private Byte Roll = 0;
+    private  Integer Trottle = 0;
+    private Integer Yau = 0;
+    private Integer Pitch = 0;
+    private Integer Roll = 0;
 
-    private Byte Aux1 = 0;
-    private Byte Aux2 = 0;
+    private Integer Aux1 = 0;
+    private Integer Aux2 = 0;
 
-    public Byte getTrottle() {
+    public Integer getTrottle() {
         return Trottle;
     }
 
-    public void setTrottle(Byte trottle) {
+    public void setTrottle(Integer trottle) {
         Trottle = trottle;
     }
 
-    public Byte getYau() {
+    public Integer getYau() {
         return Yau;
     }
 
-    public void setYau(Byte yau) {
+    public void setYau(Integer yau) {
         Yau = yau;
     }
 
-    public Byte getPitch() {
+    public Integer getPitch() {
         return Pitch;
     }
 
-    public void setPitch(Byte pitch) {
+    public void setPitch(Integer pitch) {
         Pitch = pitch;
     }
 
-    public Byte getRoll() {
+    public Integer getRoll() {
         return Roll;
     }
 
-    public void setRoll(Byte roll) {
+    public void setRoll(Integer roll) {
         Roll = roll;
     }
 
-    public Byte getAux1() {
+    public Integer getAux1() {
         return Aux1;
     }
 
-    public void setAux1(Byte aux1) {
+    public void setAux1(Integer aux1) {
         Aux1 = aux1;
     }
 
-    public Byte getAux2() {
+    public Integer getAux2() {
         return Aux2;
     }
 
-    public void setAux2(Byte aux2) {
+    public void setAux2(Integer aux2) {
         Aux2 = aux2;
     }
 
 
-    public Byte[] GetPackageData(){
+    public Integer[] GetPackageData(){
 
-        Byte arr[] = new Byte[6];
+        Integer arr[] = new Integer[6];
         arr[0] = Trottle;
         arr[1] = Pitch;
         arr[2] = Yau;

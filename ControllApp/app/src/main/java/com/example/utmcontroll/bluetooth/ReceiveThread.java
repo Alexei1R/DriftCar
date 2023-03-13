@@ -55,6 +55,7 @@ public class ReceiveThread extends Thread{
 
     public  void SendData(Byte msg){
         try{
+
             outputStream.write(msg);
         }catch (IOException e){
             Log.d("MyLog" , "Error to send data");
