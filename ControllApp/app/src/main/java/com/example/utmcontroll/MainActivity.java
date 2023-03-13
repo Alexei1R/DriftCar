@@ -3,15 +3,12 @@ package com.example.utmcontroll;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,7 +18,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -43,9 +39,14 @@ public class MainActivity extends AppCompatActivity {
     private Sensor s;
     private ImageView imView;
     private TextView textView;
-    private TextView throtleView;
-    private RelativeLayout relativeLayout;
-    private ImageView joystick;
+    private TextView throtleViewLeft;
+    private TextView throtleViewRight;
+    private RelativeLayout leftSide;
+    private RelativeLayout rightSide;
+
+
+    private Button armButton;
+    private Button modeButton;
 
 
 
@@ -54,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private int lastPosX = 0;
     private int deltaX = 0;
     private int deltaY = 0;
+
+    private int rlastPosY = 0;
+    private int rlastPosX = 0;
+    private int rdeltaX = 0;
+    private int rdeltaY = 0;
 
 
     private volatile boolean whileThread = false;
@@ -70,9 +76,14 @@ public class MainActivity extends AppCompatActivity {
         Init();
         textView = findViewById(R.id.bara_grade);
         imView = findViewById(R.id.imGrage);
-        throtleView = findViewById(R.id.throtle);
-        relativeLayout = findViewById(R.id.relativeLayout);
-        joystick = findViewById(R.id.joystick);
+        throtleViewLeft = findViewById(R.id.throtle);
+        throtleViewRight = findViewById(R.id.throtle1);
+
+        leftSide = findViewById(R.id.relativeLayout2);
+        rightSide = findViewById(R.id.relativeLayout1);
+
+        armButton = findViewById(R.id.button);
+        modeButton = findViewById(R.id.button1);
 
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -83,24 +94,68 @@ public class MainActivity extends AppCompatActivity {
 
         processMotion();
 
-       /* new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                while (!whileThread) {
-                    try {
-                        Thread.sleep(3000);
-                        btConnection.SendMessage("a");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+        ProcessTrottleLeft();
+        ProcessTrottleRight();
 
-                }
-
-            }
-        }.start();*/
 
     }
+
+
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
+    void ProcessTrottleLeft(){
+        leftSide.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                lastPosX = (int) motionEvent.getX();
+                lastPosY = (int) motionEvent.getY();
+            }
+            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                deltaX = (int) motionEvent.getX() - lastPosX;
+                deltaY = (int) motionEvent.getY() - lastPosY;
+            }
+            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                lastPosX = 0;
+                lastPosY = 0;
+                deltaX = 0;
+                deltaY = 0;
+            }
+
+
+
+
+            btConnection.SendData(  String.valueOf(deltaY));
+            throtleViewLeft.setText(String.valueOf(deltaX) + " : " + String.valueOf(deltaY));
+            return true;
+        });
+    }
+
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
+    void ProcessTrottleRight(){
+
+
+        rightSide.setOnTouchListener((view, motionEvent) -> {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                rlastPosX = (int) motionEvent.getX();
+                rlastPosY = (int) motionEvent.getY();
+            }
+            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                rdeltaX = (int) motionEvent.getX() - rlastPosX;
+                rdeltaY = (int) motionEvent.getY() - rlastPosY;
+            }
+            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                rlastPosX = 0;
+                rlastPosY = 0;
+                rdeltaX = 0;
+                rdeltaY = 0;
+            }
+
+
+            btConnection.SendData(  String.valueOf(rdeltaY));
+            throtleViewRight.setText(String.valueOf(rdeltaX) + " : " + String.valueOf(rdeltaY));
+            return true;
+        });
+    }
+
+
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -132,27 +187,10 @@ public class MainActivity extends AppCompatActivity {
 
         };
 
-        relativeLayout.setOnTouchListener((view, motionEvent) -> {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                lastPosX = (int) motionEvent.getX();
-                lastPosY = (int) motionEvent.getY();
-            }
-            if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
-                deltaX = (int) motionEvent.getX() - lastPosX;
-                deltaY = (int) motionEvent.getY() - lastPosY;
-            }
-            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-                lastPosX = 0;
-                lastPosY = 0;
-                deltaX = 0;
-                deltaY = 0;
-            }
 
-            btConnection.SendData(  String.valueOf(deltaY));
-            throtleView.setText(String.valueOf(deltaX) + " : " + String.valueOf(deltaY));
-            return true;
-        });
     }
+
+
 
     @Override
     protected void onResume() {

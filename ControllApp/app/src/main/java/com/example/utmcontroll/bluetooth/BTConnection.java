@@ -14,6 +14,7 @@ public class BTConnection {
     private Context context;
     private SharedPreferences pref;
     private ConnectThread connectThread;
+    private boolean IsReady = false;
 
     public BTConnection(Context context){
         this.context = context;
@@ -33,17 +34,18 @@ public class BTConnection {
         if(device == null){return;}
         connectThread = new ConnectThread(context,adapter,device);
         connectThread.start();
+        IsReady = true;
     }
 
     public void  SendData(String msg){
+        if(IsReady) {
+            if (connectThread.getReceiveThread() != null)
+                connectThread.getReceiveThread().SendData(msg);
 
-        if (connectThread.getReceiveThread() != null)
-            connectThread.getReceiveThread().SendData(msg);
-
-        else {
-            Log.d("MyLog","Receive thread is not ready");
+            else {
+                Log.d("MyLog", "Receive thread is not ready");
+            }
         }
-
 
     }
 
