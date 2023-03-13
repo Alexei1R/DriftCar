@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.utmcontroll.adapter.BTConstd;
 import com.example.utmcontroll.bluetooth.BTConnection;
+import com.example.utmcontroll.SendPackageData;
 
 public class MainActivity extends AppCompatActivity {
     private MenuItem menuItem;
@@ -33,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private final int ENABLE_REQUEST = 156;
     private SharedPreferences pref;
     private BTConnection btConnection;
+
+    private SendPackageData data;
 
     
     private SensorManager sm;
@@ -68,6 +72,9 @@ public class MainActivity extends AppCompatActivity {
     private SensorEventListener sv;
 
 
+
+
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +92,16 @@ public class MainActivity extends AppCompatActivity {
         armButton = findViewById(R.id.button);
         modeButton = findViewById(R.id.button1);
 
+        data = new SendPackageData();
+        //send = new SendThread();
+        //send.start();
+
+
+        data.setAux2((byte)1);
+        modeButton.setBackgroundColor(getResources().getColor(R.color.on));
+        data.setAux1((byte)0);
+        armButton.setBackgroundColor(getResources().getColor(R.color.of));
+
 
         sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sm != null) {
@@ -97,7 +114,61 @@ public class MainActivity extends AppCompatActivity {
         ProcessTrottleLeft();
         ProcessTrottleRight();
 
+        ProcessButtonARM();
+        ProcessButtonMode();
 
+
+    }
+
+    void ProcessButtonARM(){
+
+        armButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(data.getAux1() >= 1) {
+                    data.setAux1((byte) 0);
+                    armButton.setBackgroundColor(getResources().getColor(R.color.of));
+                }else{
+                    data.setAux1((byte)1);
+                    armButton.setBackgroundColor(getResources().getColor(R.color.on));
+                }
+            }
+        });
+
+
+    }
+    void ProcessButtonMode(){
+       modeButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+
+
+               Byte[] arr = new Byte[6];
+               arr = data.GetPackageData();
+               Log.d("MyLog",arr.toString());
+
+               //btConnection.SendData(arr.toString());
+               for (int i = 0;i<6;i++){
+
+
+                   btConnection.SendData(arr[i]);
+
+
+               }
+
+               btConnection.SendData((byte)13);
+               btConnection.SendData((byte)10);
+
+               if(data.getAux2() >= 1){
+                   data.setAux2((byte)0);
+                   modeButton.setBackgroundColor(getResources().getColor(R.color.of));
+               }
+               else {
+                   data.setAux2((byte)1);
+                   modeButton.setBackgroundColor(getResources().getColor(R.color.on));
+               }
+           }
+       });
     }
 
 
@@ -121,8 +192,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+            data.setTrottle((byte) deltaY);
+            data.setYau((byte) deltaX);
 
-            btConnection.SendData(  String.valueOf(deltaY));
+
             throtleViewLeft.setText(String.valueOf(deltaX) + " : " + String.valueOf(deltaY));
             return true;
         });
@@ -149,7 +222,10 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            btConnection.SendData(  String.valueOf(rdeltaY));
+            data.setPitch((byte)rdeltaY);
+            data.setRoll((byte)rdeltaX);
+
+
             throtleViewRight.setText(String.valueOf(rdeltaX) + " : " + String.valueOf(rdeltaY));
             return true;
         });
@@ -173,9 +249,10 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < 3; i++) {
                     orientations[i] = -(float) (Math.toDegrees(orientations[i]));
                 }
-                textView.setText((String.valueOf((int) orientations[2])));
-                
 
+
+
+                textView.setText((String.valueOf((int) orientations[2])));
                 imView.setRotation(orientations[2] - 90);
             }
 

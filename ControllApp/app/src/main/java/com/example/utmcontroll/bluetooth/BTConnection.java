@@ -37,7 +37,7 @@ public class BTConnection {
         IsReady = true;
     }
 
-    public void  SendData(String msg){
+    public void  SendData(Byte msg){
         if(IsReady) {
             if (connectThread.getReceiveThread() != null)
                 connectThread.getReceiveThread().SendData(msg);
