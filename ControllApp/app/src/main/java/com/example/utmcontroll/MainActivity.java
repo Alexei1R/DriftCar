@@ -30,6 +30,8 @@ import com.example.utmcontroll.bluetooth.BTConnection;
 import java.nio.ByteBuffer;
 import com.example.utmcontroll.SendPackageData;
 
+import com.example.utmcontroll.Sendthread;
+
 public class MainActivity extends AppCompatActivity {
     private MenuItem menuItem;
     private BluetoothAdapter btAdapter;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private BTConnection btConnection;
 
     private SendPackageData data;
+    private  Sendthread sendthread;
 
     
     private SensorManager sm;
@@ -67,6 +70,12 @@ public class MainActivity extends AppCompatActivity {
     private int rdeltaY = 0;
 
 
+    public int  trottle = 1000;
+    public int  pitch = 1500;
+    public int  yaw = 1500;
+    public int  roll = 1500;
+
+
     private volatile boolean whileThread = false;
 
 
@@ -94,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
         modeButton = findViewById(R.id.button1);
 
         data = new SendPackageData();
-        //send = new SendThread();
-        //send.start();
+        sendthread = new Sendthread(data,btConnection);
+        sendthread.start();
 
 
         data.setAux2(1);
@@ -110,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+        setdefaultvalues();
+
+
         processMotion();
 
         ProcessTrottleLeft();
@@ -121,16 +133,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    void setdefaultvalues(){
+        data.setTrottle(trottle);
+        data.setPitch(pitch);
+        data.setRoll(roll);
+        data.setYau(yaw);
+
+        data.setAux1(1200);
+        data.setAux2(1200);
+    }
     void ProcessButtonARM(){
 
         armButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(data.getAux1() >= 1) {
-                    data.setAux1(0);
+                if(data.getAux1() >= 1500) {
+                    data.setAux1(1200);
                     armButton.setBackgroundColor(getResources().getColor(R.color.of));
                 }else{
-                    data.setAux1(1);
+                    data.setAux1(1800);
                     armButton.setBackgroundColor(getResources().getColor(R.color.on));
                 }
             }
@@ -142,65 +163,19 @@ public class MainActivity extends AppCompatActivity {
        modeButton.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
-
-
-               Integer[] arr = new Integer[6];
-               arr = data.GetPackageData();
-
-
-               btConnection.SendData((byte)112);
-
-
-
-
-
-
-
-               /*for (int i = 0;i<6;i++){
-
-                   byte[] buf = new byte[4];
-                   buf = intToBytes(arr[i]);
-                    for(int j = 0;j<4;j++){
-                        btConnection.SendData(buf[j]);
-                    }
-
-
-               }*/
-
-               for (int i = 0;i<6;i++){
-
-                   Integer val = arr[i];
-                   val = arr[i];
-                   byte[] bytes = ByteBuffer.allocate(4).putInt(val).array();
-                   for(int j = 0;j<4;j++){
-                        btConnection.SendData(bytes[j]);
-                    }
-
-
-               }
-
-
-
-               if(data.getAux2() >= 1){
-                   data.setAux2(0);
+               if(data.getAux2() >= 1500){
+                   data.setAux2(1200);
                    modeButton.setBackgroundColor(getResources().getColor(R.color.of));
                }
                else {
-                   data.setAux2(1);
+                   data.setAux2(1800);
                    modeButton.setBackgroundColor(getResources().getColor(R.color.on));
                }
            }
        });
     }
 
-    private static byte[] intToBytes(final int data) {
-        return new byte[] {
-                (byte)((data >> 24) & 0xff),
-                (byte)((data >> 16) & 0xff),
-                (byte)((data >> 8) & 0xff),
-                (byte)((data >> 0) & 0xff),
-        };
-    }
+
 
     @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     void ProcessTrottleLeft(){
@@ -219,11 +194,31 @@ public class MainActivity extends AppCompatActivity {
                 deltaX = 0;
                 deltaY = 0;
             }
+            trottle = 1000;
+            yaw = 1500;
 
+            if(-deltaY <= 0)
+            {
 
+                trottle  = 1000;
+            }
+            if(-deltaY > 0)
+            {
+                trottle  = trottle + deltaY;
+            }
 
-            data.setTrottle(deltaY);
-            data.setYau(deltaX);
+            if(deltaX <= 0)
+            {
+
+                yaw  = yaw + deltaX;
+            }
+            if(deltaX > 0)
+            {
+                yaw  = yaw + deltaX;
+            }
+
+            data.setTrottle(trottle);
+            data.setYau(yaw);
 
 
             throtleViewLeft.setText(String.valueOf(deltaX) + " : " + String.valueOf(deltaY));
@@ -252,8 +247,32 @@ public class MainActivity extends AppCompatActivity {
             }
 
 
-            data.setPitch(rdeltaY);
-            data.setRoll(rdeltaX);
+            pitch = 1500;
+            roll = 1500;
+
+
+            if(rdeltaY < 0)
+            {
+                pitch  = pitch + rdeltaY;
+            }
+            if(rdeltaY > 0)
+            {
+                pitch  = pitch + rdeltaY;
+            }
+
+            if(rdeltaX < 0)
+            {
+                roll  = roll + rdeltaX;
+            }
+            if(rdeltaX > 0)
+            {
+                roll  = roll + rdeltaX;
+            }
+
+
+
+            data.setPitch(pitch);
+            data.setRoll(roll);
 
 
             throtleViewRight.setText(String.valueOf(rdeltaX) + " : " + String.valueOf(rdeltaY));
